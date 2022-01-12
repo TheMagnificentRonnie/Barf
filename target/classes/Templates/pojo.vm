@@ -1,0 +1,28 @@
+package ${packageName}.model.Pojo ;
+
+import lombok.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@Table(name = "${table.schema.name}", schema = "${table.name}")
+public class ${table.schema.name}_${table.name} {
+
+	  #foreach( $column in $columns )
+        private ${column.javatype} ${column.table.schema.name}_${column.table.name}_${column.name};
+      #end
+
+}
+
+
+
+
+
+

@@ -1,0 +1,219 @@
+swagger: '2.0'
+info:
+  description: |
+    This is a sample databsestore server.  You can find
+    out more about Swagger at
+    [http://swagger.io](http://swagger.io) or on
+    [irc.freenode.net, #swagger](http://swagger.io/irc/).
+  version: 1.0.0
+  title: Swagger databsestore
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+# host: databsestore.swagger.io
+# basePath: /v2
+tags:
+  - name: databse
+    description: Everything about your databses
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: store
+    description: Access to databsestore orders
+  - name: user
+    description: Operations about user
+    externalDocs:
+      description: Find out more about our store
+      url: http://swagger.io
+# schemes:
+# - http
+#foreach( table in tables )
+paths:
+  /${table.schema.name}_${table.name}:
+    post:
+      tags:
+        - ${table.schema.name}_${table.name}
+      summary: Add a new ${table.schema.name}_${table.name} to the store
+      operationId: add${table.schema.name}_${table.name}
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: ${table.schema.name}_${table.name} object that needs to be added to the store
+          required: true
+          schema:
+            $ref: '#/definitions/${table.schema.name}_${table.name}'
+      responses:
+        405:
+          description: Invalid input
+      security:
+        - ${table.schema.name}_${table.name}store_auth:
+            - write:${table.schema.name}_${table.name}s
+            - read:${table.schema.name}_${table.name}s
+    put:
+      tags:
+        - ${table.schema.name}_${table.name}
+      summary: Update an existing ${table.schema.name}_${table.name}
+      operationId: update${table.schema.name}_${table.name}
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: ${table.schema.name}_${table.name} object that needs to be added to the store
+          required: true
+          schema:
+            $ref: '#/definitions/${table.schema.name}_${table.name}'
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: ${table.schema.name}_${table.name} not found
+        405:
+          description: Validation exception
+      security:
+        - ${table.schema.name}_${table.name}store_auth:
+            - write:${table.schema.name}_${table.name}s
+            - read:${table.schema.name}_${table.name}s
+  /${table.schema.name}_${table.name}/{${table.schema.name}_${table.name}Id}:
+    get:
+      tags:
+        - ${table.schema.name}_${table.name}
+      summary: Find ${table.schema.name}_${table.name} by ID
+      description: Returns a single ${table.schema.name}_${table.name}
+      operationId: get${table.schema.name}_${table.name}ById
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: ${table.schema.name}_${table.name}Id
+          in: path
+          description: ID of ${table.schema.name}_${table.name} to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/${table.schema.name}_${table.name}'
+        400:
+          description: Invalid ID supplied
+        404:
+          description: ${table.schema.name}_${table.name} not found
+      security:
+        - api_key: []
+    post:
+      tags:
+        - ${table.schema.name}_${table.name}
+      summary: Updates a ${table.schema.name}_${table.name} in the store with form data
+      operationId: update${table.schema.name}_${table.name}WithForm
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: ${table.schema.name}_${table.name}Id
+          in: path
+          description: ID of ${table.schema.name}_${table.name} that needs to be updated
+          required: true
+          type: integer
+          format: int64
+        - name: name
+          in: formData
+          description: Updated name of the ${table.schema.name}_${table.name}
+          required: false
+          type: string
+        - name: status
+          in: formData
+          description: Updated status of the ${table.schema.name}_${table.name}
+          required: false
+          type: string
+      responses:
+        405:
+          description: Invalid input
+      security:
+        - ${table.schema.name}_${table.name}store_auth:
+            - write:${table.schema.name}_${table.name}s
+            - read:${table.schema.name}_${table.name}s
+    delete:
+      tags:
+        - ${table.schema.name}_${table.name}
+      summary: Deletes a ${table.schema.name}_${table.name}
+      operationId: delete${table.schema.name}_${table.name}
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: api_key
+          in: header
+          required: false
+          type: string
+        - name: ${table.schema.name}_${table.name}Id
+          in: path
+          description: ${table.schema.name}_${table.name} id to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: ${table.schema.name}_${table.name} not found
+      security:
+        - ${table.schema.name}_${table.name}store_auth:
+            - write:${table.schema.name}_${table.name}s
+            - read:${table.schema.name}_${table.name}s
+#end
+definitions:
+  ${table.schema.name}_${table.name}:
+    type: object
+    required:
+      - name
+      - photoUrls
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+        example: doggie
+      status:
+        type: string
+        description: ${table.schema.name}_${table.name} status in the store
+        enum:
+          - available
+          - pending
+          - sold
+  ApiResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /Meandme8/AdventureWorks20191/1.0.0
+schemes:
+  - https
+  - http

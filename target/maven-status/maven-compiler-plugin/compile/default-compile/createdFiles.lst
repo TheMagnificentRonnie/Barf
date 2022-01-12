@@ -1,0 +1,16 @@
+Database\VelocityGenerator.class
+Database\DBObjects\Relationship.class
+Database\DBObjects\Column.class
+Database\SchemaReader.class
+Database\Data\Utils\DBType.class
+Database\DBObjects\StoredProcedure.class
+Database\SchemaReader$1.class
+Database\Data\Utils\TemplateWithGenerationClassification.class
+Database\DBObjects\Parameter.class
+Database\DBObjects\Schema.class
+Database\DBObjects\Table.class
+Barfit.class
+Database\Data\Utils\TypeUtils.class
+Database\DBObjects\Keypair.class
+Database\DBObjects\Database.class
+Database\DBObjects\Key.class
