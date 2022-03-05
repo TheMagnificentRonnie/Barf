@@ -1,9 +1,0 @@
-package ${packageName}.model.Repository;
-
-import ${packageName}.model.Pojo.${table.schema.name}_${table.name};
-import java.util.List;
-
-import org.springframework.data.repository.CrudRepository;
-
-public interface ${table.schema.name}_${table.name}Repository extends CrudRepository<${table.schema.name}_${table.name}, Long> {
-}

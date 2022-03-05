@@ -13,17 +13,17 @@ public class Database {
     String packageName;
     String name;
     @JsonManagedReference
-    private ArrayList<Schema> schemas;
-     public Database(String packageName, String name)
-     {
+    private ArrayList<Table> Tables;
 
-         this.name = name;
-         this.packageName = packageName;
+    public Database(String packageName, String name) {
+
+        this.name = name;
+        this.packageName = packageName;
 
 
-         schemas = new ArrayList<Schema>();
+        Tables = new ArrayList<Table>();
 
-     }
+    }
 
 
 }

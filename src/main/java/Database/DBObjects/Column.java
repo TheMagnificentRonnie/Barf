@@ -19,6 +19,8 @@ public class Column {
     String nullable;
     Boolean identity;
     String javatype;
+    String OAStype;
+    String example;
     @JsonBackReference
     Table table;
 }

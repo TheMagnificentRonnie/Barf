@@ -3,10 +3,14 @@ package Database;
 
 import Database.DBObjects.*;
 import Database.Data.Utils.DBType;
+import Database.Data.Utils.ExampleGetter;
 import Database.Data.Utils.TypeUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.sql.*;
 import java.util.*;
+
+import static Database.Data.Utils.TypeUtils.javatypetoSwagger;
 
 public class SchemaReader {
 
@@ -49,12 +53,11 @@ public class SchemaReader {
 
             ResultSet tablesRS = databaseMetaData.getTables(null, theSchemaName, "%", new String[]{"TABLE"});
 
-            database.getSchemas().add(schema);
 
 
             while (tablesRS.next()) {
                 Table table = new Table(schema, tablesRS.getString("TABLE_NAME"));
-                schema.getTables().add(table);
+                database.getTables().add(table);
 
                 tableMap.put(table.getSchema().getName().concat(".").concat(table.getName()), table);
 
@@ -88,40 +91,27 @@ public class SchemaReader {
                         default:
                             javaType = TypeUtils.convertSQLServerType(typeName);
                     }
+                    String example="";
 
-
-                    Column column = new Column(columnName, typeName, null, null, isNullable, isIdentity, javaType, table);
+                    System.out.println(typeName);
+                    System.out.println(columnName);
+                    if (typeName.equals("xml")) {
+                        example = "";
+                    }
+                    else
+                    {
+                        example   = ExampleGetter.getExample(connectionUrl, theSchemaName, table.getName(), columnName);
+                    }
+                    Column column = new Column(columnName, typeName, null, null, isNullable, isIdentity,  javaType,javatypetoSwagger(javaType), example, table);
                     table.getColumns().add(column);
 
-                    columnMap.put()
+
 
                 }
 
                 ResultSet   rs1=databaseMetaData.getPrimaryKeys(null, table.getSchema().getName(), table.getName());
                 while(rs1.next())
                     System.out.println("Primary Key :"+rs1.getString(4));
-
-            }
-
-        }
-        for (Schema schema : database.getSchemas()
-        ) {
-
-            for (Table t : schema.getTables()
-            ) {
-                ResultSet relations = databaseMetaData.getExportedKeys(conn.getCatalog(), t.getSchema().getName(), t.getName());
-
-
-                while (relations.next()) {
-
-                    Relationship r = new Relationship();
-                    r.keypairs.add(new Keypair(relations.getString("PKCOLUMN_NAME"), relations.getString("FKCOLUMN_NAME")));
-                    r.childtable = tableMap.get(relations.getString("FKTABLE_SCHEM").concat(".").concat(relations.getString("FKTABLE_NAME")));
-                    t.getRelationships().add(r);
-
-
-                }
-
 
             }
 

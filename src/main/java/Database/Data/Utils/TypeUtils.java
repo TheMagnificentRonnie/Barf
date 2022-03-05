@@ -4,7 +4,6 @@ public class TypeUtils {
     public static String convertSQLServerType(String SQLType) {
 
 
-
         switch (SQLType) {
             case "bigint			":
                 return "long";
@@ -78,8 +77,7 @@ public class TypeUtils {
                 return "java.lang.String";
             case "NCLOB":
                 return "oracle.sql.NCLOB";
-//                case "RAW":
-//                    nm
+
             case "LONG RAW":
                 return "byte[]";
             case "BINARY_INTEGER":
@@ -109,7 +107,7 @@ public class TypeUtils {
             case "UROWID":
                 return "oracle.sql.ROWID";
             case "BOOLEAN":
-                return "boolean (note 3)";
+                return "boolean";
             case "CLOB":
                 return "java.sql.Clob";
             case "BLOB":
@@ -120,5 +118,41 @@ public class TypeUtils {
                 return "String";
 
         }
+    }
+
+    public static String javatypetoSwagger(String Javatype) {
+
+        switch (Javatype) {
+            case "java.lang.String":
+            case "String":
+            case "java.sql.Timestamp":
+                return "string";
+            case "oracle.sql.NCLOB":
+            case "byte[]":
+            case "java.sql.Clob":
+            case "java.sql.Blob":
+            case "oracle.sql.BFILE":
+            case "oracle.sql.ROWID":
+                return "object";
+            case "int":
+                return "integer";
+            case "java.math.BigDecimal":
+            case "double":
+            case "float":
+                return "number";
+            case "boolean":
+                return "boolean";
+            default:
+                return "string";
+        }
+
+
+//        string (this includes dates and files)
+//        number
+//                integer
+//        boolean
+//                array
+//        object
+
     }
 }

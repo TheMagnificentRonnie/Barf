@@ -5,6 +5,8 @@ import Database.DBObjects.Schema;
 import Database.DBObjects.Table;
 
 import Database.Data.Utils.TemplateWithGenerationClassification;
+import lombok.Data;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -19,49 +21,78 @@ public class VelocityGenerator {
     public static final String SWAGGER = "swagger";
     static String POJO = "pojo";
 
-    public static void Generate(Database database, String BaseDir) throws IOException {
 
-        IterateSchemas(database, BaseDir);
+    public static void Generate(Database database, String BaseDir) {
+
+        IterateTables(database, BaseDir);
     }
 
 
-    static void IterateSchemas(Database database, String BaseDir) throws IOException {
-
-        Template swaggerTemplate = velocityEngine.getTemplate(String.format("Templates/%s.vm", SWAGGER));
-
-        FileWriter swaggerWriter = new FileWriter(new File(String.format(OUTPUT_MODEL_LOCATION + "Swagger\\%s.yaml", "database");
-
-        TemplateWithGenerationClassification templateWithGenerationClassificationSwagger = new TemplateWithGenerationClassification(context, POJO, pojoTemplate, ta, pojoWriter);
-
-        VelocityContext context = new VelocityContext();
-        context.put("packageName", table.getSchema().getDatabase().getPackageName());
-
-
-        for (Schema schema : database.getSchemas()
-        ) {
-            Generatetables(schema, BaseDir);
-        }
-
-    }
-
-
-    static void Generatetables(Schema schema, String BaseDir) throws IOException {
+    static void IterateTables(Database database, String BaseDir)  {
 
         Properties properties = new Properties();
 
         properties.setProperty("resource.loader", "class");
         properties.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 
+
         VelocityEngine velocityEngine = new VelocityEngine(properties);
-        velocityEngine.init();
 
         velocityEngine.init();
 
+
+        GenerateSwagger(database, velocityEngine);
+
+        try {
+            Generatetables(database, BaseDir, velocityEngine);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    static void GenerateSwagger(Database database, VelocityEngine velocityEngine)  {
+
+        VelocityContext context = getDBContextContext(database);
+
+        Template swaggerTemplate = velocityEngine.getTemplate(String.format("Templates/%s.vm", SWAGGER));
+
+
+        FileWriter swaggerWriter = null;
+        try {
+            swaggerWriter = new FileWriter(new File(String.format(OUTPUT_MODEL_LOCATION + "Swagger\\%s.yaml", "database")));
+
+
+        swaggerTemplate.merge(context,swaggerWriter);
+            swaggerWriter.flush();
+            swaggerWriter.close();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+
+
+    }
+
+
+    static VelocityContext getDBContextContext(Database database) {
+
+        VelocityContext context = new VelocityContext();
+        context.put("db", database);
+        return context;
+
+
+    }
+
+
+    static void Generatetables(Database database, String BaseDir, VelocityEngine velocityEngine) throws IOException {
 
         List<TemplateWithGenerationClassification> contextWriterList = new ArrayList<TemplateWithGenerationClassification>();
 
 
-        for (Table ta : schema.getTables()
+        for (Table ta : database.getTables()
         ) {
 
             VelocityContext context = getTableContext(ta);
